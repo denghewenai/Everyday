@@ -25,6 +25,11 @@ public class ColorFilter extends AFilter {
     }
 
     @Override
+    protected void onCreate() {
+        createProgram("filter/default_vertex.sh", "filter/color_fragment.sh");
+    }
+
+    @Override
     public void onDrawSet() {
         GLES20.glUniform1i(hChangeType,filter.getType());
         GLES20.glUniform3fv(hChangeColor,1,filter.data(),0);

@@ -9,8 +9,12 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -21,7 +25,9 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import cn.gdut.android.everyday.R
 import cn.gdut.android.everyday.adapter.PhotoFiltersAdapter
+import cn.gdut.android.everyday.image.GLES20BackEnv
 import cn.gdut.android.everyday.image.filter.ColorFilter
+import cn.gdut.android.everyday.image.filter.ContrastColorFilter
 import cn.gdut.android.everyday.models.FilterItem
 import cn.gdut.android.everyday.ui.view.AnimationTopLayout
 import cn.gdut.android.everyday.ui.view.RevealBackgroundView
@@ -36,11 +42,14 @@ import rx.SingleSubscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
+import java.io.FileOutputStream
 
 /**
  * Created by denghewen on 2018/4/6
  */
-class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChangeListener, AnimationTopLayout.OnAnimationHalfFinishListener {
+class TakePhotoActivity : AppCompatActivity()
+        , RevealBackgroundView.OnStateChangeListener
+        , AnimationTopLayout.OnAnimationHalfFinishListener{
 
     companion object {
         private val ARG_REVEAL_START_LOCATION = "reveal_start_location"
@@ -56,9 +65,11 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
         }
     }
 
+    private var mBackEnv: GLES20BackEnv? = null
+
+    private var currentBitmap: Bitmap? = null
     private var pendingIntro: Boolean = false
     private var currentState: Int = 0
-    private var photoPath: File? = null
     private var mGridDrawableRes: IntArray = intArrayOf(R.drawable.ic_grid_on_white_24dp, R.drawable.ic_grid_off_white_24dp)
     private var mGridState: Int = 0
     private var mCameraIdState: Int = 0
@@ -68,6 +79,7 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
 
     private val outlineItems = listOf(FilterItem("模糊", ColorFilter.Filter.BLUR)
             , FilterItem("放大镜", ColorFilter.Filter.MAGN))
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +120,7 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
                     .camera(false)
                     .onResult { requestCode, result ->
                         Single.just(DefaultAlbumLoader.readImageFromPath(result[0].path, ivTakenPhoto.width, ivTakenPhoto.height))
-                                .subscribeOn(Schedulers.newThread())
+                                .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(object : SingleSubscriber<Bitmap>() {
                                     override fun onError(p0: Throwable?) {
@@ -150,7 +162,12 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
         }
 
         btnAccept.setOnClickListener {
-
+            Single.just(saveBitmap(mBackEnv!!.bitmap))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { file ->
+                        PublishActivity.openWithPhotoUri(this, Uri.fromFile(file))
+                    }
         }
     }
 
@@ -180,8 +197,16 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
     private fun setupPhotoFilters() {
         val bitmap = BitmapFactory.decodeStream(resources.assets.open("texture/default_img.png"))
         val photoFiltersAdapter = PhotoFiltersAdapter(this, bitmap, hueItems) { item ->
-            ivTakenPhoto.setFilter(ColorFilter(this, item.filter))
+            ivTakenPhoto.setFilter(ContrastColorFilter(this, item.filter))
             ivTakenPhoto.requestRender()
+            if(currentBitmap != null) {
+                mBackEnv = GLES20BackEnv(currentBitmap!!.width, currentBitmap!!.height)
+                mBackEnv!!.setThreadOwner(mainLooper.thread.name)
+                val contrastColorFilter = ContrastColorFilter(this, item.filter)
+                contrastColorFilter.setBitmap(currentBitmap)
+                mBackEnv!!.setFilter(contrastColorFilter)
+                mBackEnv!!.setInput(currentBitmap)
+            }
         }
         rvFilters.setHasFixedSize(true)
         rvFilters.adapter = photoFiltersAdapter
@@ -305,10 +330,56 @@ class TakePhotoActivity : AppCompatActivity(), RevealBackgroundView.OnStateChang
 
     private fun showTakenPicture(bitmap: Bitmap) {
         val photoFiltersAdapter = rvFilters.adapter as PhotoFiltersAdapter
+        currentBitmap = bitmap
         photoFiltersAdapter.setCurrentImg(bitmap)
         vUpperPanel.showNext()
         vLowerPanel.showNext()
         ivTakenPhoto.setImageBitmap(bitmap)
+        ivTakenPhoto.setFilter(ColorFilter(this,ColorFilter.Filter.NONE))
         updateState(STATE_SETUP_PHOTO)
+    }
+
+    private fun saveBitmap(currentBitmap :Bitmap): File? {
+
+        val fos: FileOutputStream
+        try {
+            // 判断手机设备是否有SD卡
+            val isHasSDCard = Environment.getExternalStorageState() == android.os.Environment.MEDIA_MOUNTED
+            val file: File
+            if (isHasSDCard) {
+                // SD卡根目录
+                val sdRoot = Environment.getExternalStorageDirectory()
+                Log.e("ssh", sdRoot.toString())
+                file = File(sdRoot, "test.png")
+                fos = FileOutputStream(file)
+            } else
+                throw Exception("创建文件失败!")
+            //压缩图片 30 是压缩率，表示压缩70%; 如果不压缩是100，表示压缩率为0
+            currentBitmap!!.compress(Bitmap.CompressFormat.PNG, 90, fos)
+
+            fos.flush()
+            fos.close()
+            return file
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return null
+    }
+
+    private fun loadBitmapFromView(v: View): Bitmap {
+        val w = v.getWidth()
+        val h = v.getHeight()
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+
+
+        c.drawColor(Color.WHITE)
+        /** 如果不设置canvas画布为白色，则生成透明  */
+
+        v.layout(0, 0, w, h)
+        v.draw(c)
+
+        return bmp
     }
 }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cn.gdut.android.everyday.R
-import cn.gdut.android.everyday.image.filter.ColorFilter
+import cn.gdut.android.everyday.image.filter.ContrastColorFilter
 import cn.gdut.android.everyday.models.FilterItem
 import kotlinx.android.synthetic.main.item_photo_filter.view.*
 
@@ -43,7 +43,8 @@ class PhotoFiltersAdapter(val context: Context, private var currentImg: Bitmap
         fun bind(item: FilterItem, bitmap: Bitmap, listener: (FilterItem) -> Unit) = with(itemView) {
             tvFilterName.text = item.filterName
             sglFilterThumb.setImageBitmap(bitmap)
-            sglFilterThumb.setFilter(ColorFilter(context, item.filter))
+
+            sglFilterThumb.setFilter(ContrastColorFilter(context, item.filter))
             setOnClickListener {
                 listener(item)
             }

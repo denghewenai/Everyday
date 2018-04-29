@@ -20,6 +20,11 @@ import cn.gdut.android.everyday.image.filter.AFilter;
  */
 public class SGLView extends GLSurfaceView {
 
+    private Bitmap currentBitmap;
+    private int mBmpWidth;
+    private int mBmpHeight;
+    private boolean isPreview = false;
+
     private SGLRender render;
 
     public SGLView(Context context) {
@@ -34,6 +39,7 @@ public class SGLView extends GLSurfaceView {
     private void init() {
         setEGLContextClientVersion(2);
         render = new SGLRender(this);
+
         setRenderer(render);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
@@ -46,8 +52,15 @@ public class SGLView extends GLSurfaceView {
     }
 
     public void setImageBitmap(Bitmap bitmap) {
+        currentBitmap = bitmap;
+        mBmpWidth = bitmap.getWidth();
+        mBmpHeight = bitmap.getHeight();
         render.setImage(bitmap);
         requestRender();
+    }
+
+    public Bitmap getCurrentBitmap() {
+        return currentBitmap;
     }
 
     public SGLRender getRender() {
