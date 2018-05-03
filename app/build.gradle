@@ -8,7 +8,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "cn.gdut.android.everyday"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -82,8 +82,13 @@ dependencies {
     implementation 'com.otaliastudios:cameraview:1.5.0'
     implementation 'com.android.support:exifinterface:27.1.0'
 
+    implementation "org.jetbrains.anko:anko-appcompat-v7-commons:0.10.5"
+
     implementation rootProject.ext.dependencies.rxKotlin
     implementation rootProject.ext.dependencies.rxAndroid
+
+    implementation 'com.airbnb.android:lottie:2.5.4'
+    implementation 'com.github.nuptboyzhb.lib.uikit:superswiperefreshlayout:1.0.0'
 
     // Test helpers for LiveData
     testImplementation 'android.arch.core:core-testing:1.1.0'

@@ -4,4 +4,7 @@
     <dimen name="dimen_48dip">48dip</dimen>
     <dimen name="default_elevation">8dp</dimen>
     <dimen name="publish_photo_thumbnail_size">96dp</dimen>
+
+    <dimen name="timeline_item_offset_left">46dp</dimen>
+    <dimen name="timeline_item_node_radius">16dp</dimen>
 </resources>

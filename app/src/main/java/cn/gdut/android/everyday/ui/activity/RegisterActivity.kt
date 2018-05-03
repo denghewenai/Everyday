@@ -48,7 +48,9 @@ class RegisterActivity : AppCompatActivity() {
                             loadingPleaseWait.visibility = View.GONE
                             Toast.makeText(applicationContext, "注册成功:" + s.toString(), Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                             startActivity(intent)
+                            finish()
                         } else {
                             progressBarRegister.visibility = View.GONE
                             loadingPleaseWait.visibility = View.GONE

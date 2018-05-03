@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 
 /**
- * Created by wuwang on 2016/10/22
+ * Created by denghewen on 2018/4/22
  */
 public class ContrastColorFilter extends AFilter {
 

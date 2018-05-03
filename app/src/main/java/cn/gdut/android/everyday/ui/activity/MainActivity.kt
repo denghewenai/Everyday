@@ -10,6 +10,7 @@ import cn.gdut.android.everyday.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.toolbar.*
+import org.jetbrains.anko.startActivity
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -39,6 +40,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             TakePhotoActivity.startCameraFromLocation(startingLocation, this)
             overridePendingTransition(0, 0)
         }
+
+        llRememberTimeLine.setOnClickListener {
+            startActivity<TimeLineActivity>()
+        }
         // Example of a call to a native method
 //        sample_text.text = stringFromJNI()
     }
@@ -59,6 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     external fun stringFromJNI(): String
 
     companion object {
+        val ACTION_SHOW_LOADING_ITEM = "action_show_loading_item"
 
         // Used to load the 'native-lib' library on application startup.
         init {

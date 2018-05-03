@@ -14,8 +14,12 @@ public class Utils {
     private static int screenWidth = 0;
     private static int screenHeight = 0;
 
-    public static int dpToPx(int dp) {
-        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    public static int dpToPx(Context context,float dp) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    public static int spToPx(Context context, float spValue) {
+        return (int) (spValue * context.getResources().getDisplayMetrics().scaledDensity + 0.5f);
     }
 
     public static int getScreenHeight(Context c) {
