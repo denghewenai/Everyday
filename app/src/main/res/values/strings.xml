@@ -13,4 +13,10 @@
     <string name="navigation_drawer_open">打开</string>
     <string name="navigation_drawer_close">关闭</string>
     <string name="action_settings">设置</string>
+    <string name="transition_test">transition_test</string>
+    <string name="sort">排序</string>
+    <string name="sort_edit_before">修改时间,远到近</string>
+    <string name="sort_edit_soon">修改时间,近到远</string>
+    <string name="sort_create_before">创建时间,远到近</string>
+    <string name="sort_create_soon">创建时间,近到远</string>
 </resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/ic_sort_white_24dp"
+        android:title="@string/sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_sort_create_far"
+                    android:checked="true"
+                    android:title="@string/sort_create_before"
+                    app:showAsAction="ifRoom|collapseActionView"/>
+                <item
+                    android:id="@+id/menu_sort_create_close"
+                    android:checked="false"
+                    android:title="@string/sort_create_soon"
+                    app:showAsAction="ifRoom|collapseActionView"/>
+                <item
+                    android:id="@+id/menu_sort_edit_far"
+                    android:checked="false"
+                    android:title="@string/sort_edit_before"
+                    app:showAsAction="ifRoom|collapseActionView"/>
+                <item
+                    android:id="@+id/menu_sort_edit_close"
+                    android:checked="false"
+                    android:title="@string/sort_edit_soon"
+                    app:showAsAction="ifRoom|collapseActionView"/>
+            </group>
+        </menu>
+    </item>
+</menu>

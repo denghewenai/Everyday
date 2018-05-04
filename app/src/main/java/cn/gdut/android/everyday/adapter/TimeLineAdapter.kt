@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import android.widget.ImageView
 import cn.gdut.android.everyday.R
 import cn.gdut.android.everyday.models.Note
 import com.squareup.picasso.Callback
@@ -16,13 +17,20 @@ import kotlinx.android.synthetic.main.time_line_item.view.*
  * Created by Administrator on 2018/5/1 0001.
  */
 class TimeLineAdapter(val context:Context,
-                      private var noteList: List<Note>,
-                      private val listener: (Note) -> Unit) : RecyclerView.Adapter<TimeLineAdapter.ViewHolder>() {
+                      private var noteList: MutableList<Note>,
+                      private val listener: (Note,ImageView) -> Unit) : RecyclerView.Adapter<TimeLineAdapter.ViewHolder>() {
 
 
-    public fun setNoteList(noteList:List<Note>){
+    fun setNoteList(noteList:MutableList<Note>){
         this.noteList = noteList
         notifyDataSetChanged()
+    }
+
+    fun addNoteList(noteList: MutableList<Note>){
+        val startPosition = this.noteList.size
+        this.noteList.addAll(noteList)
+        val endPosition = this.noteList.size
+        notifyItemRangeInserted(startPosition,endPosition)
     }
 
     override fun getItemCount(): Int = noteList.size
@@ -37,7 +45,7 @@ class TimeLineAdapter(val context:Context,
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(note: Note,listener: (Note) -> Unit) = with(itemView) {
+        fun bind(note: Note,listener: (Note,ImageView) -> Unit) = with(itemView) {
             tvDescription.text = note.describe
             Picasso.Builder(context)
                     .build()
@@ -59,7 +67,7 @@ class TimeLineAdapter(val context:Context,
                     })
 
             setOnClickListener {
-                listener(note)
+                listener(note,ivPhotoNote)
             }
         }
     }

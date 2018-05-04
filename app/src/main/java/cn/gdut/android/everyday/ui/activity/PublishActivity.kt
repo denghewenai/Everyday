@@ -28,7 +28,7 @@ import java.net.URI
 
 
 /**
- * Created by Administrator on 2018/4/27 0027.
+ * Created by denghewen on 2018/4/27 0027.
  */
 class PublishActivity : AppCompatActivity() {
 
@@ -104,6 +104,7 @@ class PublishActivity : AppCompatActivity() {
                         override fun done(objectId: String?, e: BmobException?) {
                             if (e == null) {
                                 toast("创建日记成功：" + objectId)
+                                bringMainActivityToTop()
                             } else {
 //                                Log.i("bmob","失败："+e.getMessage()+","+e.getErrorCode());
                                 toast("创建日记失败:" + e.message)
