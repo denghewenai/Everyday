@@ -9,8 +9,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -38,7 +36,6 @@ import com.yanzhenjie.album.Album
 import com.yanzhenjie.album.task.DefaultAlbumLoader
 import kotlinx.android.synthetic.main.activity_take_photo.*
 import rx.Single
-import rx.SingleSubscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
@@ -119,20 +116,18 @@ class TakePhotoActivity : AppCompatActivity()
                     .selectCount(1)
                     .camera(false)
                     .onResult { requestCode, result ->
-                        Single.just(DefaultAlbumLoader.readImageFromPath(result[0].path, ivTakenPhoto.width, ivTakenPhoto.height))
+                        Single.just(result[0].path)
+                                .map { path ->
+                                    DefaultAlbumLoader.readImageFromPath(path, ivTakenPhoto.width, ivTakenPhoto.height)
+                                }
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(object : SingleSubscriber<Bitmap>() {
-                                    override fun onError(p0: Throwable?) {
-                                    }
+                                .subscribe{ bitmap ->
+                                    currentBitmap = bitmap
+                                    showTakenPicture(bitmap)
+                                }
 
-                                    override fun onSuccess(bitmap: Bitmap) {
-                                        showTakenPicture(bitmap)
-                                    }
-
-                                })
-                    }
-                    .start()
+                    }.start()
         }
 
         btnEffectHue.setOnClickListener {
@@ -216,6 +211,12 @@ class TakePhotoActivity : AppCompatActivity()
     override fun onResume() {
         super.onResume()
         cameraView.start()
+        if(currentBitmap != null) {
+            val photoFiltersAdapter = rvFilters.adapter as PhotoFiltersAdapter
+            photoFiltersAdapter.setCurrentImg(currentBitmap!!)
+            ivTakenPhoto.setImageBitmap(currentBitmap)
+            ivTakenPhoto.setFilter(ContrastColorFilter(this, ColorFilter.Filter.NONE))
+        }
     }
 
     override fun onPause() {
@@ -263,7 +264,7 @@ class TakePhotoActivity : AppCompatActivity()
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun updateStatusBarColor() {
         if (Utils.isAndroid5()) {
-            window.statusBarColor = 0x111111
+            window.statusBarColor = 0xfb8c00
         }
     }
 
@@ -290,6 +291,7 @@ class TakePhotoActivity : AppCompatActivity()
             cameraView.addCameraListener(object : CameraListener() {
                 override fun onPictureTaken(picture: ByteArray?) {
                     CameraUtils.decodeBitmap(picture, 1000, 1000) { bitmap ->
+                        currentBitmap = bitmap
                         showTakenPicture(bitmap)
                     }
                 }
@@ -330,13 +332,13 @@ class TakePhotoActivity : AppCompatActivity()
 
     private fun showTakenPicture(bitmap: Bitmap) {
         val photoFiltersAdapter = rvFilters.adapter as PhotoFiltersAdapter
-        currentBitmap = bitmap
         photoFiltersAdapter.setCurrentImg(bitmap)
         vUpperPanel.showNext()
         vLowerPanel.showNext()
         ivTakenPhoto.setImageBitmap(bitmap)
-        ivTakenPhoto.setFilter(ColorFilter(this,ColorFilter.Filter.NONE))
+        ivTakenPhoto.setFilter(ContrastColorFilter(this, ColorFilter.Filter.NONE))
         updateState(STATE_SETUP_PHOTO)
+
     }
 
     private fun saveBitmap(currentBitmap :Bitmap): File? {
@@ -365,21 +367,5 @@ class TakePhotoActivity : AppCompatActivity()
         }
 
         return null
-    }
-
-    private fun loadBitmapFromView(v: View): Bitmap {
-        val w = v.getWidth()
-        val h = v.getHeight()
-        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val c = Canvas(bmp)
-
-
-        c.drawColor(Color.WHITE)
-        /** 如果不设置canvas画布为白色，则生成透明  */
-
-        v.layout(0, 0, w, h)
-        v.draw(c)
-
-        return bmp
     }
 }

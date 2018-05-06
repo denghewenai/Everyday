@@ -35,10 +35,11 @@ class TimeLineActivity : AppCompatActivity() {
     private lateinit var lottieAnimationViewMore: LottieAnimationView
     private var skip: Int = 0
     private var sortType = CREATEORDER
+    private var folderId = "*"
 
     companion object {
         val ACTION_SHOW_LOADING_ITEM = "action_show_loading_item"
-
+        val FOLDER_ID = "folderId"
         val CREATEORDER = "createdAt"
         val CREATEORDERDESC = "-createdAt"
         val UPDATEORDER = "updatedAt"
@@ -50,6 +51,7 @@ class TimeLineActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_time_line)
 
+        folderId = intent.getStringExtra(FOLDER_ID)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 //        recyclerViewTimeLine.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -201,6 +203,9 @@ class TimeLineActivity : AppCompatActivity() {
     private fun loadMoreData(findListener: FindListener<Note>) {
         val query = BmobQuery<Note>()
         query.addWhereEqualTo("userId", BmobUser.getCurrentUser().objectId)
+        if("*" != folderId) {
+            query.addWhereEqualTo("folderId", folderId)
+        }
         query.order(sortType)
         query.setSkip(skip)
         query.setLimit(ONE_REQUEST_LIMIT)
@@ -210,6 +215,9 @@ class TimeLineActivity : AppCompatActivity() {
     private fun refreshData(findListener: FindListener<Note>) {
         val query = BmobQuery<Note>()
         query.addWhereEqualTo("userId", BmobUser.getCurrentUser().objectId)
+        if("*" != folderId) {
+            query.addWhereEqualTo("folderId", folderId)
+        }
         query.order(sortType)
         query.setLimit(ONE_REQUEST_LIMIT)
         query.findObjects(findListener)

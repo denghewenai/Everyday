@@ -3,6 +3,7 @@
     <color name="colorPrimary">#fb8c00</color>
     <color name="colorPrimaryDark">#424242</color>
     <color name="colorAccent">#FFC107</color>
+    <color name="colorAccentTint">#55FFC107</color>
 
     <color name="grey">#bfbfbf</color>
     <color name="white">#fff</color>
@@ -21,4 +22,5 @@
 
     <color name="btn_default_light_normal">#00000000</color>
     <color name="btn_default_light_pressed">#40ffffff</color>
+    <color name="confirm_text_color">#000000</color>
 </resources>

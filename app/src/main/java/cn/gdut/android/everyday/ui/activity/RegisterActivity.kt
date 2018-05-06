@@ -10,6 +10,7 @@ import cn.bmob.v3.BmobUser
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.SaveListener
 import cn.gdut.android.everyday.R
+import cn.gdut.android.everyday.models.FileInfo
 import kotlinx.android.synthetic.main.activity_register.*
 
 
@@ -44,13 +45,7 @@ class RegisterActivity : AppCompatActivity() {
                 user.signUp(object : SaveListener<BmobUser>() {
                     override fun done(s: BmobUser, e: BmobException?) {
                         if (e == null) {
-                            progressBarRegister.visibility = View.GONE
-                            loadingPleaseWait.visibility = View.GONE
-                            Toast.makeText(applicationContext, "注册成功:" + s.toString(), Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                            startActivity(intent)
-                            finish()
+                            createDefaultFolder()
                         } else {
                             progressBarRegister.visibility = View.GONE
                             loadingPleaseWait.visibility = View.GONE
@@ -60,6 +55,21 @@ class RegisterActivity : AppCompatActivity() {
                 })
             }
         }
+    }
+
+    private fun createDefaultFolder() {
+        val bmobFolder = FileInfo("默认")
+        bmobFolder.save(object :SaveListener<String>(){
+            override fun done(objectId: String?, e: BmobException?) {
+                progressBarRegister.visibility = View.GONE
+                loadingPleaseWait.visibility = View.GONE
+                Toast.makeText(applicationContext, "注册成功!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                finish()
+            }
+        })
     }
 
     private fun checkInputs(email: String?, username: String?, password: String?): Boolean {

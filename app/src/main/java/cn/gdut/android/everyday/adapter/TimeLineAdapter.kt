@@ -9,6 +9,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import cn.gdut.android.everyday.R
 import cn.gdut.android.everyday.models.Note
+import cn.gdut.android.everyday.utils.DateTimeUtils
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.time_line_item.view.*
@@ -46,6 +47,7 @@ class TimeLineAdapter(val context:Context,
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(note: Note,listener: (Note,ImageView) -> Unit) = with(itemView) {
+            tvDateTime.text = DateTimeUtils.parseDateTime(note.createdAt, "yyyy-MM-dd HH:mm:ss","yyyy-MM-dd,hh:mm a ")
             tvDescription.text = note.describe
             Picasso.Builder(context)
                     .build()

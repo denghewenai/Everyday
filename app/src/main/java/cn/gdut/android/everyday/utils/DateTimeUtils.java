@@ -14,11 +14,13 @@ public class DateTimeUtils {
 
     public static String parseDateTime(String dateString, String originalFormat, String outputFromat){
 
-        SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.US);
+        SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.CHINA);
         Date date = null;
         try {
             date = formatter.parse(dateString);
-
+            if(isNow(date)){
+                return "今天";
+            }
             SimpleDateFormat dateFormat=new SimpleDateFormat(outputFromat, new Locale("US"));
 
             return dateFormat.format(date);
@@ -31,7 +33,7 @@ public class DateTimeUtils {
 
     public static String getRelativeTimeSpan(String dateString, String originalFormat){
 
-        SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.US);
+        SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.CHINA);
         Date date = null;
         try {
             date = formatter.parse(dateString);
@@ -42,5 +44,18 @@ public class DateTimeUtils {
             e.printStackTrace();
             return "";
         }
+    }
+
+    private static boolean isNow(Date date) {
+        //当前时间
+        Date now = new Date();
+        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+        //获取今天的日期
+        String nowDay = sf.format(now);
+
+        //对比的时间
+        String day = sf.format(date);
+
+        return day.equals(nowDay);
     }
 }

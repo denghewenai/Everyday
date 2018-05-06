@@ -32,7 +32,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activity.SplashActivity">
+        <activity android:name=".ui.activity.SplashActivity"
+            android:theme="@style/AppTheme.SplashActivity"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +42,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.MainActivity">
+        <activity android:name=".ui.activity.MainActivity"
+            android:launchMode="singleTask"
+            >
 
         </activity>
 
@@ -59,6 +63,10 @@
         <activity android:name=".ui.activity.TimeLineActivity"/>
 
         <activity android:name=".ui.activity.ActivityTransitionToActivity"/>
+
+        <activity android:name=".ui.activity.FolderManageActivity"/>
+
+        <activity android:name=".ui.activity.AboutUsActivity"/>
     </application>
 
 </manifest>

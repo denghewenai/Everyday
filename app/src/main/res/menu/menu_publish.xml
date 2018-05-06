@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/action_publish"
-        android:icon="@drawable/ic_done_grey600_24dp"
+        android:icon="@drawable/ic_done_24dp"
         android:title="Done"
         app:showAsAction="always" />
 

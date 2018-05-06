@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import cn.bmob.v3.BmobUser
 import cn.gdut.android.everyday.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -14,7 +15,19 @@ import org.jetbrains.anko.startActivity
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        when (item.itemId) {
+        //When home is clicked
+            R.id.nav_about -> {
+                startActivity<AboutUsActivity>()
+                return true
+            }
+            R.id.nav_quit ->{
+                BmobUser.logOut()
+                startActivity<LoginActivity>()
+                finish()
+            }
+        }
+        return true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +55,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         llRememberTimeLine.setOnClickListener {
-            startActivity<TimeLineActivity>()
+            startActivity<TimeLineActivity>(TimeLineActivity.FOLDER_ID to "*")
+        }
+
+        llFolder.setOnClickListener {
+            startActivity<FolderManageActivity>()
         }
         // Example of a call to a native method
 //        sample_text.text = stringFromJNI()
@@ -53,7 +70,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
     }
 
