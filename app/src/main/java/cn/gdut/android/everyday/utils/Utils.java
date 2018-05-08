@@ -1,9 +1,9 @@
 package cn.gdut.android.everyday.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Build;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -48,5 +48,26 @@ public class Utils {
 
     public static boolean isAndroid5() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+
+    //规定每段显示的长度
+    private static int LOG_MAXLENGTH = 2000;
+
+    public static void d(String TAG, String msg) {
+        int strLength = msg.length();
+        int start = 0;
+        int end = LOG_MAXLENGTH;
+        for (int i = 0; i < 100; i++) {
+            //剩下的文本还是大于规定长度则继续重复截取并输出
+            if (strLength > end) {
+                Log.d(TAG + i, msg.substring(start, end));
+                start = end;
+                end = end + LOG_MAXLENGTH;
+            } else {
+                Log.d(TAG, msg.substring(start, strLength));
+                break;
+            }
+        }
     }
 }

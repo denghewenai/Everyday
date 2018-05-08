@@ -12,7 +12,8 @@ import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.SaveListener
 import cn.gdut.android.everyday.R
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_register.*
+
+
 
 /**
  * Created by denghewen on 2018/3/22 0022.
@@ -30,17 +31,18 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             Log.d(TAG, "onClick: attempting to log in.")
 
-            val email = etLoginInputEmail.text.toString()
+            val username = etLoginInputUsername.text.toString()
             val password = etLoginInputPassword.text.toString()
 
-            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                 Toast.makeText(applicationContext, "所有信息都必须填写！", Toast.LENGTH_SHORT).show()
             } else {
                 progressBarLogin.visibility = View.VISIBLE
                 tvPleaseWait.visibility = View.VISIBLE
 
                 val user = BmobUser()
-                user.email = email
+                user.username = username
+                user.emailVerified = true
                 user.setPassword(password)
 
                 user.login(object : SaveListener<BmobUser>() {
@@ -49,23 +51,48 @@ class LoginActivity : AppCompatActivity() {
                             progressBarLogin.visibility = View.GONE
                             tvPleaseWait.visibility = View.GONE
                             val currentUser: BmobUser = BmobUser.getCurrentUser()
-                            if (currentUser.emailVerified) {
-                                Toast.makeText(applicationContext, "登录成功:" + s.toString(), Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                startActivity(intent)
-                            } else {
-                                Toast.makeText(applicationContext, "邮箱校验失败，检查你的邮箱", Toast.LENGTH_SHORT).show()
-                                progressBarLogin.visibility = View.GONE
-                                tvPleaseWait.visibility = View.GONE
-                                BmobUser.logOut()
-                            }
+//                            if (currentUser.emailVerified) {
+                            Toast.makeText(applicationContext, "登录成功:" + s.toString(), Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(intent)
+//                            } else {
+//                                Toast.makeText(applicationContext, "邮箱校验失败，检查你的邮箱", Toast.LENGTH_SHORT).show()
+//                                progressBarLogin.visibility = View.GONE
+//                                tvPleaseWait.visibility = View.GONE
+//                                BmobUser.logOut()
+//                            }
                         } else {
                             progressBarLogin.visibility = View.GONE
-                            loadingPleaseWait.visibility = View.GONE
+                            tvPleaseWait.visibility = View.GONE
                             Toast.makeText(applicationContext, "登录失败:" + e.toString(), Toast.LENGTH_SHORT).show()
                         }
                     }
                 })
+
+//                BmobUser.loginByAccount(email, password, object : LogInListener<BmobUser?>() {
+//                    override fun done(user: BmobUser?, e: BmobException?) {
+//                        if (user != null) {
+//                            progressBarLogin.visibility = View.GONE
+//                            tvPleaseWait.visibility = View.GONE
+//                            val currentUser: BmobUser = BmobUser.getCurrentUser()
+//                            if (currentUser.emailVerified) {
+//                                Toast.makeText(applicationContext, "登录成功:" + user.toString(), Toast.LENGTH_SHORT).show()
+//                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                                startActivity(intent)
+//                            } else {
+//                                Toast.makeText(applicationContext, "邮箱校验失败，检查你的邮箱", Toast.LENGTH_SHORT).show()
+//                                progressBarLogin.visibility = View.GONE
+//                                tvPleaseWait.visibility = View.GONE
+//                                BmobUser.logOut()
+//                            }
+//                        } else {
+//                            progressBarLogin.visibility = View.GONE
+//                            tvPleaseWait.visibility = View.GONE
+//                            Log.d(TAG,"登录失败：" + e.toString())
+//                            Toast.makeText(applicationContext,  "登录失败:" + e.toString(), Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                })
             }
         }
 
@@ -86,6 +113,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "LoginActiviyty"
+        private val TAG = "LoginActivity"
     }
 }
