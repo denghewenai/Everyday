@@ -216,6 +216,7 @@ class TakePhotoActivity : AppCompatActivity()
             photoFiltersAdapter.setCurrentImg(currentBitmap!!)
             ivTakenPhoto.setImageBitmap(currentBitmap)
             ivTakenPhoto.setFilter(ContrastColorFilter(this, ColorFilter.Filter.NONE))
+            ivTakenPhoto.requestRender()
         }
     }
 
@@ -335,10 +336,10 @@ class TakePhotoActivity : AppCompatActivity()
         photoFiltersAdapter.setCurrentImg(bitmap)
         vUpperPanel.showNext()
         vLowerPanel.showNext()
+        updateState(STATE_SETUP_PHOTO)
         ivTakenPhoto.setImageBitmap(bitmap)
         ivTakenPhoto.setFilter(ContrastColorFilter(this, ColorFilter.Filter.NONE))
-        updateState(STATE_SETUP_PHOTO)
-
+        ivTakenPhoto.requestRender()
     }
 
     private fun saveBitmap(currentBitmap :Bitmap): File? {
@@ -357,7 +358,7 @@ class TakePhotoActivity : AppCompatActivity()
             } else
                 throw Exception("创建文件失败!")
             //压缩图片 30 是压缩率，表示压缩70%; 如果不压缩是100，表示压缩率为0
-            currentBitmap!!.compress(Bitmap.CompressFormat.PNG, 90, fos)
+            currentBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos)
 
             fos.flush()
             fos.close()
